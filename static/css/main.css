@@ -249,6 +249,7 @@ main.container {
 .toggle-summary {
   font-weight: 600;
   cursor: pointer;
+  user-select: none;
 }
 
 .campaigns-tabs {
