@@ -27,3 +27,11 @@ No incluye:
 - Python
 - Flask
 - Jinja templates
+
+## Principios del proyecto
+
+- Simplicidad por encima de completitud
+- Formularios mínimos
+- Claridad visual antes que estética
+- Sin sobreingeniería
+- Cambios incrementales y pequeños
