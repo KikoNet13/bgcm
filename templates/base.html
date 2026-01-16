@@ -21,6 +21,7 @@
       hx-boost="true"
       hx-target="#page"
       hx-select="#page"
+      hx-swap="outerHTML"
     >
       {% block page_header %}{% endblock %}
       {% block content %}{% endblock %}
@@ -28,6 +29,16 @@
 
     <script>
       const THEME_KEY = "bgcm-theme";
+
+      const getPreferredTheme = () => {
+        const storedTheme = localStorage.getItem(THEME_KEY);
+        if (storedTheme) {
+          return storedTheme;
+        }
+        return window.matchMedia("(prefers-color-scheme: dark)").matches
+          ? "dark"
+          : "light";
+      };
 
       const applyTheme = (theme) => {
         const isDark = theme === "dark";
@@ -46,19 +57,11 @@
         }
       };
 
-      const storedTheme = localStorage.getItem(THEME_KEY);
-      if (storedTheme) {
-        applyTheme(storedTheme);
-      } else if (window.matchMedia("(prefers-color-scheme: dark)").matches) {
-        applyTheme("dark");
-      } else {
-        applyTheme("light");
-      }
-
-      document.addEventListener("DOMContentLoaded", () => {
+      const bindThemeToggle = () => {
         const toggle = document.querySelector(".theme-toggle");
-        if (!toggle) return;
+        if (!toggle || toggle.dataset.bound === "true") return;
 
+        toggle.dataset.bound = "true";
         toggle.addEventListener("click", () => {
           const nextTheme = document.body.classList.contains("dark")
             ? "light"
@@ -66,7 +69,17 @@
           localStorage.setItem(THEME_KEY, nextTheme);
           applyTheme(nextTheme);
         });
-      });
+      };
+
+      const initTheme = () => {
+        applyTheme(getPreferredTheme());
+        bindThemeToggle();
+      };
+
+      initTheme();
+
+      document.addEventListener("DOMContentLoaded", initTheme);
+      document.addEventListener("htmx:afterSwap", initTheme);
     </script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </body>
