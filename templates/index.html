@@ -1,0 +1,150 @@
+{% extends "base.html" %} {% block content %}
+
+<h1>BGCM - Campa&ntilde;as</h1>
+
+<nav>
+  <ul>
+    <li><a href="#games" data-view-target="games" class="contrast">Juegos</a></li>
+    <li>
+      <a href="#campaigns" data-view-target="campaigns" class="secondary"
+        >Campa&ntilde;as</a
+      >
+    </li>
+  </ul>
+  <small>Alterna entre las vistas para cada componente.</small>
+</nav>
+
+<section data-view="games">
+  <h2>Juegos</h2>
+
+  <form method="post">
+    <p>
+      <label for="game-name">Nombre del juego</label><br />
+      <input type="text" id="game-name" name="game_name" required />
+    </p>
+
+    <p>
+      <button type="submit">Guardar juego</button>
+    </p>
+  </form>
+
+  <hr />
+
+  <h3>Listado</h3>
+  <ul>
+    {% for game in games %}
+    <li>{{ game.name }}</li>
+    {% else %}
+    <li><em>- ninguno -</em></li>
+    {% endfor %}
+  </ul>
+</section>
+
+<section data-view="campaigns" hidden>
+  <h2>Campa&ntilde;as</h2>
+
+  <form method="post">
+    <p>
+      <label for="campaign-name">Nombre de la campa&ntilde;a</label><br />
+      <input type="text" id="campaign-name" name="campaign_name" required />
+    </p>
+
+    <p>
+      <label for="game">Juego</label><br />
+      <select id="game" name="game_id" required>
+        <option value="">(seleccionar juego)</option>
+        {% for game in games %}
+        <option value="{{ game.id }}">{{ game.name }}</option>
+        {% endfor %}
+      </select>
+    </p>
+
+    <p>
+      <label for="status">Estado</label><br />
+      <select id="status" name="status">
+        <option value="planificada">Planificada</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="activa">Activa</option>
+        <option value="finalizada">Finalizada</option>
+      </select>
+    </p>
+
+    <p>
+      <label>
+        <input type="checkbox" name="abandoned" />
+        Campa&ntilde;a abandonada
+      </label>
+    </p>
+
+    <p>
+      <button type="submit">Guardar campa&ntilde;a</button>
+    </p>
+  </form>
+
+  <hr />
+
+  {% set status_sections = [
+    ("activa", "Activas"),
+    ("pendiente", "Pendientes"),
+    ("planificada", "Planificadas"),
+    ("finalizada", "Finalizadas")
+  ] %}
+  {% for status_value, status_label in status_sections %}
+  <h3>{{ status_label }}</h3>
+  <ul>
+    {% for campaign in campaigns if campaign.status.value == status_value %}
+    <li>
+      {% if campaign.abandoned %}
+      <del>{{ campaign.name }} - {{ campaign.game.name }}</del>
+      <small>(abandonada)</small>
+      {% else %}
+      <strong>{{ campaign.name }}</strong>
+      <small>- {{ campaign.game.name }}</small>
+      {% endif %}
+    </li>
+    {% else %}
+    <li><em>- ninguna -</em></li>
+    {% endfor %}
+  </ul>
+  {% if not loop.last %}
+  <hr />
+  {% endif %}
+  {% endfor %}
+</section>
+
+<script>
+  (() => {
+    const viewButtons = document.querySelectorAll("[data-view-target]");
+    const views = document.querySelectorAll("[data-view]");
+
+    const showView = (target) => {
+      views.forEach((section) => {
+        section.hidden = section.dataset.view !== target;
+      });
+
+      viewButtons.forEach((link) => {
+        link.classList.toggle("contrast", link.dataset.viewTarget === target);
+        link.classList.toggle("secondary", link.dataset.viewTarget !== target);
+      });
+    };
+
+    const initialTarget =
+      window.location.hash.replace("#", "") ||
+      (viewButtons[0] && viewButtons[0].dataset.viewTarget);
+
+    viewButtons.forEach((link) => {
+      link.addEventListener("click", (event) => {
+        event.preventDefault();
+        const target = link.dataset.viewTarget;
+        showView(target);
+        history.replaceState(null, "", `#${target}`);
+      });
+    });
+
+    if (initialTarget) {
+      showView(initialTarget);
+    }
+  })();
+</script>
+
+{% endblock %}
