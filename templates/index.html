@@ -4,7 +4,18 @@
 <header class="app-header">
   <div class="header-left">
     <div class="brand">
-      <div class="logo-placeholder" aria-hidden="true">Logo</div>
+      <div class="logo">
+        <img
+          class="logo-light"
+          src="{{ url_for('static', filename='logo.png') }}"
+          alt="BGCM"
+        />
+        <img
+          class="logo-dark"
+          src="{{ url_for('static', filename='logo_dark.png') }}"
+          alt="BGCM"
+        />
+      </div>
       <p class="brand-title">BGCM — BoardGame Campaign Manager</p>
     </div>
     <nav class="primary-tabs" aria-label="Navegación principal">
@@ -23,6 +34,11 @@
         Campañas
       </a>
     </nav>
+  </div>
+  <div class="header-actions">
+    <button type="button" class="theme-toggle" aria-pressed="false">
+      Modo oscuro
+    </button>
   </div>
 </header>
 {% endblock %}
