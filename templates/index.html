@@ -16,7 +16,6 @@
           alt="BGCM"
         />
       </div>
-      <p class="brand-title">BGCM — BoardGame Campaign Manager</p>
     </div>
     <nav class="primary-tabs" aria-label="Navegación principal">
       <a
@@ -36,9 +35,7 @@
     </nav>
   </div>
   <div class="header-actions">
-    <button type="button" class="theme-toggle" aria-pressed="false">
-      Modo oscuro
-    </button>
+    <button type="button" class="theme-toggle" aria-pressed="false">🌙</button>
   </div>
 </header>
 {% endblock %}
@@ -47,8 +44,6 @@
 <div id="view-content" class="stack">
   {% if view == "games" %}
   <section class="stack">
-    <h2 class="section-title">Juegos</h2>
-
     <div class="view-layout">
       <article class="card">
         <h3>Listado</h3>
@@ -85,8 +80,6 @@
   </section>
   {% else %}
   <section class="stack">
-    <h2 class="section-title">Campañas</h2>
-
     <div class="view-layout">
       <article class="card">
         <h3>Estado actual</h3>
