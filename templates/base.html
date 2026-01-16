@@ -54,6 +54,16 @@
     </style>
   </head>
   <body>
-    <main class="container">{% block content %}{% endblock %}</main>
+    <main
+      id="page"
+      class="container"
+      hx-boost="true"
+      hx-target="#page"
+      hx-select="#page"
+    >
+      {% block content %}{% endblock %}
+    </main>
+
+    <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </body>
 </html>

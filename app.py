@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, redirect, render_template, request, url_for
 
 from models import db, Game, Campaign, CampaignStatus
 
@@ -22,19 +22,24 @@ app = create_app()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
+    view = request.args.get("view", "games")
+    if view not in {"games", "campaigns"}:
+        view = "games"
+
     if request.method == "POST":
 
         # Alta de juego
         if "game_name" in request.form:
+            view = "games"
             name = request.form.get("game_name", "").strip()
             if name:
                 game = Game(name=name)
                 db.session.add(game)
                 db.session.commit()
-            return redirect(url_for("index"))
 
         # Alta de campaña
         if "campaign_name" in request.form:
+            view = "campaigns"
             name = request.form.get("campaign_name", "").strip()
             game_id = request.form.get("game_id")
             status = request.form.get("status")
@@ -50,12 +55,19 @@ def index():
                 db.session.add(campaign)
                 db.session.commit()
 
-            return redirect(url_for("index"))
+        if request.headers.get("HX-Request"):
+            campaigns = Campaign.query.all()
+            games = Game.query.order_by(Game.name).all()
+            return render_template(
+                "index.html", campaigns=campaigns, games=games, view=view
+            )
+
+        return redirect(url_for("index", view=view))
 
     campaigns = Campaign.query.all()
     games = Game.query.order_by(Game.name).all()
 
-    return render_template("index.html", campaigns=campaigns, games=games)
+    return render_template("index.html", campaigns=campaigns, games=games, view=view)
 
 
 if __name__ == "__main__":
