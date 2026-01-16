@@ -51,6 +51,114 @@
       .section-title {
         margin-bottom: 0.5rem;
       }
+
+      .view-layout {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+        gap: 1.5rem;
+        align-items: start;
+      }
+
+      .card--muted {
+        background: #f9fafb;
+        border-style: dashed;
+      }
+
+      .toggle-summary {
+        font-weight: 600;
+        cursor: pointer;
+      }
+
+      .campaigns-tabs {
+        display: grid;
+        gap: 1rem;
+      }
+
+      .campaigns-tabs input[type="radio"] {
+        display: none;
+      }
+
+      .tab-controls {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .tab-controls label {
+        padding: 0.35rem 0.75rem;
+        border-radius: 999px;
+        border: 1px solid var(--pico-muted-border-color);
+        font-size: 0.85rem;
+        cursor: pointer;
+        background: #fff;
+      }
+
+      #tab-all:checked ~ .tab-controls label[for="tab-all"],
+      #tab-active:checked ~ .tab-controls label[for="tab-active"],
+      #tab-pending:checked ~ .tab-controls label[for="tab-pending"],
+      #tab-planned:checked ~ .tab-controls label[for="tab-planned"],
+      #tab-finished:checked ~ .tab-controls label[for="tab-finished"],
+      #tab-abandoned:checked ~ .tab-controls label[for="tab-abandoned"] {
+        background: var(--pico-primary-background);
+        color: var(--pico-primary-inverse);
+        border-color: transparent;
+      }
+
+      .campaigns-table table {
+        margin: 0;
+      }
+
+      .campaigns-table tbody tr {
+        display: none;
+      }
+
+      #tab-all:checked ~ .campaigns-table tbody tr {
+        display: table-row;
+      }
+
+      #tab-active:checked ~ .campaigns-table tbody tr.status-activa:not(.is-abandoned),
+      #tab-pending:checked ~ .campaigns-table tbody tr.status-pendiente:not(.is-abandoned),
+      #tab-planned:checked ~ .campaigns-table tbody tr.status-planificada:not(.is-abandoned),
+      #tab-finished:checked ~ .campaigns-table tbody tr.status-finalizada:not(.is-abandoned),
+      #tab-abandoned:checked ~ .campaigns-table tbody tr.is-abandoned {
+        display: table-row;
+      }
+
+      .status-pill {
+        display: inline-flex;
+        align-items: center;
+        padding: 0.15rem 0.55rem;
+        border-radius: 999px;
+        font-size: 0.75rem;
+        background: #eef2f7;
+        color: #0f172a;
+        margin-right: 0.35rem;
+      }
+
+      .status-pill.status-activa {
+        background: #dcfce7;
+        color: #14532d;
+      }
+
+      .status-pill.status-planificada {
+        background: #e0f2fe;
+        color: #0c4a6e;
+      }
+
+      .status-pill.status-pendiente {
+        background: #fef9c3;
+        color: #713f12;
+      }
+
+      .status-pill.status-finalizada {
+        background: #f3f4f6;
+        color: #374151;
+      }
+
+      .status-pill.status-abandoned {
+        background: #fee2e2;
+        color: #7f1d1d;
+      }
     </style>
   </head>
   <body>
