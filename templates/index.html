@@ -2,26 +2,28 @@
 
 {% block page_header %}
 <header class="app-header">
-  <div class="brand">
-    <div class="logo-placeholder" aria-hidden="true">Logo</div>
-    <p class="brand-title">BGCM — BoardGame Campaign Manager</p>
+  <div class="header-left">
+    <div class="brand">
+      <div class="logo-placeholder" aria-hidden="true">Logo</div>
+      <p class="brand-title">BGCM — BoardGame Campaign Manager</p>
+    </div>
+    <nav class="primary-tabs" aria-label="Navegación principal">
+      <a
+        href="{{ url_for('index', view='games') }}"
+        class="{{ 'is-active' if view == 'games' else '' }}"
+        aria-current="{{ 'page' if view == 'games' else 'false' }}"
+      >
+        Juegos
+      </a>
+      <a
+        href="{{ url_for('index', view='campaigns') }}"
+        class="{{ 'is-active' if view == 'campaigns' else '' }}"
+        aria-current="{{ 'page' if view == 'campaigns' else 'false' }}"
+      >
+        Campañas
+      </a>
+    </nav>
   </div>
-  <nav class="primary-tabs" aria-label="Navegación principal">
-    <a
-      href="{{ url_for('index', view='games') }}"
-      class="{{ 'is-active' if view == 'games' else '' }}"
-      aria-current="{{ 'page' if view == 'games' else 'false' }}"
-    >
-      Juegos
-    </a>
-    <a
-      href="{{ url_for('index', view='campaigns') }}"
-      class="{{ 'is-active' if view == 'campaigns' else '' }}"
-      aria-current="{{ 'page' if view == 'campaigns' else 'false' }}"
-    >
-      Campañas
-    </a>
-  </nav>
 </header>
 {% endblock %}
 
