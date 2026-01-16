@@ -36,6 +36,78 @@
         color: var(--pico-muted-color);
       }
 
+      .app-header {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 1rem 1.5rem;
+        padding-bottom: 0.75rem;
+        border-bottom: 1px solid var(--pico-muted-border-color);
+        margin-bottom: 1.5rem;
+      }
+
+      .app-header .brand {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .logo-placeholder {
+        width: 44px;
+        height: 44px;
+        border-radius: 0.65rem;
+        border: 1px dashed var(--pico-muted-border-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.65rem;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--pico-muted-color);
+        background: #fff;
+      }
+
+      .brand-title {
+        margin: 0;
+        font-size: 0.9rem;
+        font-weight: 500;
+        color: var(--pico-muted-color);
+      }
+
+      .primary-tabs {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+      }
+
+      .primary-tabs a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0.6rem 1.4rem;
+        border-radius: 0.9rem 0.9rem 0.4rem 0.4rem;
+        border: 1px solid var(--pico-muted-border-color);
+        background: #fff;
+        font-size: 1.05rem;
+        font-weight: 600;
+        color: var(--pico-contrast-color);
+        text-decoration: none;
+        transition: background 0.2s ease, border-color 0.2s ease;
+      }
+
+      .primary-tabs a:hover {
+        border-color: var(--pico-primary);
+      }
+
+      .primary-tabs a.is-active {
+        background: var(--pico-primary-background);
+        color: var(--pico-primary-inverse);
+        border-color: transparent;
+        box-shadow: 0 4px 10px rgba(30, 64, 175, 0.12);
+      }
+
       .stack > * + * {
         margin-top: 1.5rem;
       }
@@ -169,6 +241,7 @@
       hx-target="#page"
       hx-select="#page"
     >
+      {% block page_header %}{% endblock %}
       {% block content %}{% endblock %}
     </main>
 
