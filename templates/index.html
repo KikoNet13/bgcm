@@ -2,200 +2,219 @@
 
 {% block page_header %}
 <header>
-  <div>
-    <div>
-      <div>
-        <img
-          src="{{ url_for('static', filename='images/logo.png') }}"
-          alt="BGCM"
-        />
-        <img
-          src="{{ url_for('static', filename='images/logo_dark.png') }}"
-          alt="BGCM"
-        />
-      </div>
-    </div>
-    <nav aria-label="Navegación principal">
-      <a
-        href="{{ url_for('index', view='games') }}"
-        aria-current="{{ 'page' if view == 'games' else 'false' }}"
-      >
-        Juegos
-      </a>
-      <a
-        href="{{ url_for('index', view='campaigns') }}"
-        aria-current="{{ 'page' if view == 'campaigns' else 'false' }}"
-      >
-        Campañas
-      </a>
-    </nav>
-  </div>
+  <nav aria-label="Acciones principales">
+    <ul>
+      <li><strong>Campañas</strong></li>
+    </ul>
+    <ul>
+      <li>
+        <button type="button" data-dialog-open="campaign-dialog">
+          ➕ Nueva campaña
+        </button>
+      </li>
+      <li>
+        <button
+          type="button"
+          class="secondary"
+          data-dialog-open="game-dialog"
+        >
+          ➕ Nuevo juego
+        </button>
+      </li>
+    </ul>
+  </nav>
 </header>
 {% endblock %}
 
 {% block content %}
 <div id="view-content">
-  {% if view == "games" %}
   <section>
-    <div>
-      <article>
-        <h3>Listado</h3>
-        <ul>
-          {% for game in games %}
-          <li>{{ game.name }}</li>
-          {% else %}
-          <li><em>- ninguno -</em></li>
-          {% endfor %}
-        </ul>
-      </article>
+    <article>
+      <header>
+        <h2>Campañas</h2>
+      </header>
+      <form method="get" action="{{ url_for('index', view='campaigns') }}">
+        <fieldset>
+          <label for="filter-status">Estado</label>
+          <select id="filter-status" name="status">
+            <option value="">Todas</option>
+            <option value="planificada">Planificada</option>
+            <option value="pendiente">Pendiente</option>
+            <option value="activa">Activa</option>
+            <option value="finalizada">Finalizada</option>
+            <option value="abandonada">Abandonada</option>
+          </select>
+        </fieldset>
+        <fieldset>
+          <label for="filter-game">Juego</label>
+          <select id="filter-game" name="game_id">
+            <option value="">Todos</option>
+            {% for game in games %}
+            <option value="{{ game.id }}">{{ game.name }}</option>
+            {% endfor %}
+          </select>
+        </fieldset>
+      </form>
 
-      <article>
-        <h3>Crear datos</h3>
-        <details>
-          <summary>Añadir nuevo juego</summary>
-          <form
-            method="post"
-            action="{{ url_for('index', view='games') }}"
-            hx-push-url="true"
-          >
-            <p>
-              <label for="game-name">Nombre del juego</label><br />
-              <input type="text" id="game-name" name="game_name" required />
-            </p>
-
-            <p>
-              <button type="submit">Guardar juego</button>
-            </p>
-          </form>
-        </details>
-      </article>
-    </div>
-  </section>
-  {% else %}
-  <section>
-    <div>
-      <article>
-        <h3>Estado actual</h3>
-        {% set status_labels = {
-        "planificada": "Planificada",
-        "pendiente": "Pendiente",
-        "activa": "Activa",
-        "finalizada": "Finalizada"
-        } %}
-        <div>
-          <input type="radio" name="campaign-tab" id="tab-all" checked />
-          <input type="radio" name="campaign-tab" id="tab-active" />
-          <input type="radio" name="campaign-tab" id="tab-pending" />
-          <input type="radio" name="campaign-tab" id="tab-planned" />
-          <input type="radio" name="campaign-tab" id="tab-finished" />
-          <input type="radio" name="campaign-tab" id="tab-abandoned" />
-
-          <div>
-            <label for="tab-all">Todas</label>
-            <label for="tab-active">Activas</label>
-            <label for="tab-pending">Pendientes</label>
-            <label for="tab-planned">Planificadas</label>
-            <label for="tab-finished">Finalizadas</label>
-            <label for="tab-abandoned">Abandonadas</label>
-          </div>
-
-          <div>
-            <table>
-              <thead>
-                <tr>
-                  <th>Campaña</th>
-                  <th>Juego</th>
-                  <th>Estado</th>
-                </tr>
-              </thead>
-              <tbody>
-                {% for campaign in campaigns %}
-                <tr>
-                  <td>
-                    {% if campaign.abandoned %}
-                    <del>{{ campaign.name }}</del>
-                    {% else %}
-                    {{ campaign.name }}
-                    {% endif %}
-                  </td>
-                  <td>{{ campaign.game.name }}</td>
-                  <td>
-                    <span>
-                      {{ status_labels[campaign.status.value] }}
-                    </span>
-                    {% if campaign.abandoned %}
-                    <span>
-                      Abandonada
-                    </span>
-                    {% endif %}
-                  </td>
-                </tr>
+      {% set status_labels = {
+      "planificada": "Planificada",
+      "pendiente": "Pendiente",
+      "activa": "Activa",
+      "finalizada": "Finalizada"
+      } %}
+      <div>
+        <table>
+          <thead>
+            <tr>
+              <th>Campaña</th>
+              <th>Juego</th>
+              <th>Estado</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for campaign in campaigns %}
+            <tr>
+              <td>
+                {% if campaign.abandoned %}
+                <del>{{ campaign.name }}</del>
                 {% else %}
-                <tr>
-                  <td colspan="3"><em>- ninguna -</em></td>
-                </tr>
-                {% endfor %}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      </article>
-
-      <article>
-        <h3>Crear datos</h3>
-        <details>
-          <summary>Añadir nueva campaña</summary>
-          <form
-            method="post"
-            action="{{ url_for('index', view='campaigns') }}"
-            hx-push-url="true"
-          >
-            <p>
-              <label for="campaign-name">Nombre de la campaña</label><br />
-              <input
-                type="text"
-                id="campaign-name"
-                name="campaign_name"
-                required
-              />
-            </p>
-
-            <p>
-              <label for="game">Juego</label><br />
-              <select id="game" name="game_id" required>
-                <option value="">(seleccionar juego)</option>
-                {% for game in games %}
-                <option value="{{ game.id }}">{{ game.name }}</option>
-                {% endfor %}
-              </select>
-            </p>
-
-            <p>
-              <label for="status">Estado</label><br />
-              <select id="status" name="status">
-                <option value="planificada">Planificada</option>
-                <option value="pendiente">Pendiente</option>
-                <option value="activa">Activa</option>
-                <option value="finalizada">Finalizada</option>
-              </select>
-            </p>
-
-            <p>
-              <label>
-                <input type="checkbox" name="abandoned" />
-                Campaña abandonada
-              </label>
-            </p>
-
-            <p>
-              <button type="submit">Guardar campaña</button>
-            </p>
-          </form>
-        </details>
-      </article>
-    </div>
+                {{ campaign.name }}
+                {% endif %}
+              </td>
+              <td>{{ campaign.game.name }}</td>
+              <td>
+                <span>
+                  {{ status_labels[campaign.status.value] }}
+                </span>
+                {% if campaign.abandoned %}
+                <span>
+                  Abandonada
+                </span>
+                {% endif %}
+              </td>
+            </tr>
+            {% else %}
+            <tr>
+              <td colspan="3"><em>- ninguna -</em></td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </article>
   </section>
-  {% endif %}
+
+  <dialog id="campaign-dialog">
+    <article>
+      <header>
+        <button
+          aria-label="Cerrar"
+          rel="prev"
+          type="button"
+          data-dialog-close="campaign-dialog"
+        ></button>
+        <h3>Nueva campaña</h3>
+      </header>
+      <form
+        method="post"
+        action="{{ url_for('index', view='campaigns') }}"
+        hx-push-url="true"
+      >
+        <label for="campaign-name">Nombre de la campaña</label>
+        <input type="text" id="campaign-name" name="campaign_name" required />
+
+        <label for="game">Juego</label>
+        <select id="game" name="game_id" required>
+          <option value="">(seleccionar juego)</option>
+          {% for game in games %}
+          <option value="{{ game.id }}">{{ game.name }}</option>
+          {% endfor %}
+        </select>
+
+        <label for="status">Estado</label>
+        <select id="status" name="status">
+          <option value="planificada">Planificada</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="activa">Activa</option>
+          <option value="finalizada">Finalizada</option>
+        </select>
+
+        <label>
+          <input type="checkbox" name="abandoned" />
+          Campaña abandonada
+        </label>
+
+        <footer>
+          <button type="submit">Guardar campaña</button>
+          <button
+            type="button"
+            class="secondary"
+            data-dialog-close="campaign-dialog"
+          >
+            Cancelar
+          </button>
+        </footer>
+      </form>
+    </article>
+  </dialog>
+
+  <dialog id="game-dialog">
+    <article>
+      <header>
+        <button
+          aria-label="Cerrar"
+          rel="prev"
+          type="button"
+          data-dialog-close="game-dialog"
+        ></button>
+        <h3>Nuevo juego</h3>
+      </header>
+      <form
+        method="post"
+        action="{{ url_for('index', view='games') }}"
+        hx-push-url="true"
+      >
+        <label for="game-name">Nombre del juego</label>
+        <input type="text" id="game-name" name="game_name" required />
+
+        <footer>
+          <button type="submit">Guardar juego</button>
+          <button
+            type="button"
+            class="secondary"
+            data-dialog-close="game-dialog"
+          >
+            Cancelar
+          </button>
+        </footer>
+      </form>
+    </article>
+  </dialog>
 </div>
+
+<script>
+  const dialogOpenButtons = document.querySelectorAll("[data-dialog-open]");
+  const dialogCloseButtons = document.querySelectorAll("[data-dialog-close]");
+
+  dialogOpenButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const dialogId = button.getAttribute("data-dialog-open");
+      const dialog = document.getElementById(dialogId);
+      if (dialog) {
+        dialog.showModal();
+      }
+    });
+  });
+
+  dialogCloseButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const dialogId = button.getAttribute("data-dialog-close");
+      const dialog = document.getElementById(dialogId);
+      if (dialog) {
+        dialog.close();
+      }
+    });
+  });
+</script>
 
 {% endblock %}
