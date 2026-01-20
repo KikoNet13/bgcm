@@ -3,12 +3,6 @@
   <head>
     <meta charset="UTF-8" />
     <title>BGCM</title>
-
-    <!-- Pico.css -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css"
-    />
     <link
       rel="stylesheet"
       href="{{ url_for('static', filename='css/main.css') }}"
@@ -17,7 +11,6 @@
   <body>
     <main
       id="page"
-      class="container"
       hx-boost="true"
       hx-target="#page"
       hx-select="#page"
@@ -27,60 +20,6 @@
       {% block content %}{% endblock %}
     </main>
 
-    <script>
-      const THEME_KEY = "bgcm-theme";
-
-      const getPreferredTheme = () => {
-        const storedTheme = localStorage.getItem(THEME_KEY);
-        if (storedTheme) {
-          return storedTheme;
-        }
-        return window.matchMedia("(prefers-color-scheme: dark)").matches
-          ? "dark"
-          : "light";
-      };
-
-      const applyTheme = (theme) => {
-        const isDark = theme === "dark";
-        document.body.classList.toggle("dark", isDark);
-        const toggle = document.querySelector(".theme-toggle");
-        if (toggle) {
-          toggle.setAttribute("aria-pressed", String(isDark));
-          toggle.setAttribute(
-            "aria-label",
-            isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
-          );
-          toggle.setAttribute(
-            "title",
-            isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"
-          );
-        }
-      };
-
-      const bindThemeToggle = () => {
-        const toggle = document.querySelector(".theme-toggle");
-        if (!toggle || toggle.dataset.bound === "true") return;
-
-        toggle.dataset.bound = "true";
-        toggle.addEventListener("click", () => {
-          const nextTheme = document.body.classList.contains("dark")
-            ? "light"
-            : "dark";
-          localStorage.setItem(THEME_KEY, nextTheme);
-          applyTheme(nextTheme);
-        });
-      };
-
-      const initTheme = () => {
-        applyTheme(getPreferredTheme());
-        bindThemeToggle();
-      };
-
-      initTheme();
-
-      document.addEventListener("DOMContentLoaded", initTheme);
-      document.addEventListener("htmx:afterSwap", initTheme);
-    </script>
     <script src="https://unpkg.com/htmx.org@1.9.12"></script>
   </body>
 </html>

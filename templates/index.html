@@ -1,53 +1,44 @@
 {% extends "base.html" %}
 
 {% block page_header %}
-<header class="app-header">
-  <div class="header-left">
-    <div class="brand">
-      <div class="logo">
+<header>
+  <div>
+    <div>
+      <div>
         <img
-          class="logo-light"
           src="{{ url_for('static', filename='images/logo.png') }}"
           alt="BGCM"
         />
         <img
-          class="logo-dark"
           src="{{ url_for('static', filename='images/logo_dark.png') }}"
           alt="BGCM"
         />
       </div>
     </div>
-    <nav class="primary-tabs" aria-label="Navegación principal">
+    <nav aria-label="Navegación principal">
       <a
         href="{{ url_for('index', view='games') }}"
-        class="{{ 'is-active' if view == 'games' else '' }}"
         aria-current="{{ 'page' if view == 'games' else 'false' }}"
       >
         Juegos
       </a>
       <a
         href="{{ url_for('index', view='campaigns') }}"
-        class="{{ 'is-active' if view == 'campaigns' else '' }}"
         aria-current="{{ 'page' if view == 'campaigns' else 'false' }}"
       >
         Campañas
       </a>
     </nav>
   </div>
-  <div class="header-actions">
-    <span class="theme-label" aria-hidden="true">&#9728;</span>
-    <button type="button" class="theme-toggle" aria-pressed="false"></button>
-    <span class="theme-label" aria-hidden="true">&#127769;</span>
-  </div>
 </header>
 {% endblock %}
 
 {% block content %}
-<div id="view-content" class="stack">
+<div id="view-content">
   {% if view == "games" %}
-  <section class="stack">
-    <div class="view-layout">
-      <article class="card">
+  <section>
+    <div>
+      <article>
         <h3>Listado</h3>
         <ul>
           {% for game in games %}
@@ -58,10 +49,10 @@
         </ul>
       </article>
 
-      <article class="card card--muted">
+      <article>
         <h3>Crear datos</h3>
         <details>
-          <summary class="toggle-summary">Añadir nuevo juego</summary>
+          <summary>Añadir nuevo juego</summary>
           <form
             method="post"
             action="{{ url_for('index', view='games') }}"
@@ -81,9 +72,9 @@
     </div>
   </section>
   {% else %}
-  <section class="stack">
-    <div class="view-layout">
-      <article class="card">
+  <section>
+    <div>
+      <article>
         <h3>Estado actual</h3>
         {% set status_labels = {
         "planificada": "Planificada",
@@ -91,7 +82,7 @@
         "activa": "Activa",
         "finalizada": "Finalizada"
         } %}
-        <div class="campaigns-tabs">
+        <div>
           <input type="radio" name="campaign-tab" id="tab-all" checked />
           <input type="radio" name="campaign-tab" id="tab-active" />
           <input type="radio" name="campaign-tab" id="tab-pending" />
@@ -99,7 +90,7 @@
           <input type="radio" name="campaign-tab" id="tab-finished" />
           <input type="radio" name="campaign-tab" id="tab-abandoned" />
 
-          <div class="tab-controls">
+          <div>
             <label for="tab-all">Todas</label>
             <label for="tab-active">Activas</label>
             <label for="tab-pending">Pendientes</label>
@@ -108,7 +99,7 @@
             <label for="tab-abandoned">Abandonadas</label>
           </div>
 
-          <div class="campaigns-table">
+          <div>
             <table>
               <thead>
                 <tr>
@@ -119,9 +110,7 @@
               </thead>
               <tbody>
                 {% for campaign in campaigns %}
-                <tr
-                  class="status-{{ campaign.status.value }} {% if campaign.abandoned %}is-abandoned{% endif %}"
-                >
+                <tr>
                   <td>
                     {% if campaign.abandoned %}
                     <del>{{ campaign.name }}</del>
@@ -131,11 +120,11 @@
                   </td>
                   <td>{{ campaign.game.name }}</td>
                   <td>
-                    <span class="status-pill status-{{ campaign.status.value }}">
+                    <span>
                       {{ status_labels[campaign.status.value] }}
                     </span>
                     {% if campaign.abandoned %}
-                    <span class="status-pill status-abandoned">
+                    <span>
                       Abandonada
                     </span>
                     {% endif %}
@@ -152,10 +141,10 @@
         </div>
       </article>
 
-      <article class="card card--muted">
+      <article>
         <h3>Crear datos</h3>
         <details>
-          <summary class="toggle-summary">Añadir nueva campaña</summary>
+          <summary>Añadir nueva campaña</summary>
           <form
             method="post"
             action="{{ url_for('index', view='campaigns') }}"
