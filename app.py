@@ -22,15 +22,14 @@ app = create_app()
 
 @app.route("/", methods=["GET", "POST"])
 def index():
-    view = request.args.get("view", "games")
-    if view not in {"games", "campaigns"}:
-        view = "games"
+    def get_filters():
+        status = request.values.get("status", "").strip()
+        game_id = request.values.get("game_id", "").strip()
+        return status, game_id
 
     if request.method == "POST":
-
         # Alta de juego
         if "game_name" in request.form:
-            view = "games"
             name = request.form.get("game_name", "").strip()
             if name:
                 game = Game(name=name)
@@ -39,35 +38,63 @@ def index():
 
         # Alta de campaña
         if "campaign_name" in request.form:
-            view = "campaigns"
             name = request.form.get("campaign_name", "").strip()
             game_id = request.form.get("game_id")
             status = request.form.get("status")
-            abandoned = request.form.get("abandoned") == "on"
 
             if name and game_id and status:
                 campaign = Campaign(
                     name=name,
                     game_id=int(game_id),
                     status=CampaignStatus(status),
-                    abandoned=abandoned,
                 )
                 db.session.add(campaign)
                 db.session.commit()
 
         if request.headers.get("HX-Request"):
-            campaigns = Campaign.query.all()
+            filter_status, filter_game_id = get_filters()
+            campaigns = filtered_campaigns(filter_status, filter_game_id)
             games = Game.query.order_by(Game.name).all()
             return render_template(
-                "index.html", campaigns=campaigns, games=games, view=view
+                "index.html",
+                campaigns=campaigns,
+                games=games,
+                filter_status=filter_status,
+                filter_game_id=filter_game_id,
             )
 
-        return redirect(url_for("index", view=view))
+        return redirect(url_for("index"))
 
-    campaigns = Campaign.query.all()
+    filter_status, filter_game_id = get_filters()
+    campaigns = filtered_campaigns(filter_status, filter_game_id)
     games = Game.query.order_by(Game.name).all()
+    form = request.args.get("form")
 
-    return render_template("index.html", campaigns=campaigns, games=games, view=view)
+    return render_template(
+        "index.html",
+        campaigns=campaigns,
+        games=games,
+        filter_status=filter_status,
+        filter_game_id=filter_game_id,
+        form=form,
+    )
+
+
+def filtered_campaigns(status_filter, game_id_filter):
+    query = Campaign.query
+
+    if status_filter == "abandonada":
+        query = query.filter(Campaign.abandoned.is_(True))
+    elif status_filter:
+        try:
+            query = query.filter(Campaign.status == CampaignStatus(status_filter))
+        except ValueError:
+            pass
+
+    if game_id_filter.isdigit():
+        query = query.filter(Campaign.game_id == int(game_id_filter))
+
+    return query.all()
 
 
 if __name__ == "__main__":
