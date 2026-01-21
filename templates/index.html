@@ -8,18 +8,22 @@
     </ul>
     <ul>
       <li>
-        <button type="button" data-dialog-open="campaign-dialog">
-          ➕ Nueva campaña
-        </button>
+        <a
+          class="secondary"
+          role="button"
+          href="{{ url_for('index', form='campaign') }}"
+        >
+          Nueva campaña
+        </a>
       </li>
       <li>
-        <button
-          type="button"
+        <a
           class="secondary"
-          data-dialog-open="game-dialog"
+          role="button"
+          href="{{ url_for('index', form='game') }}"
         >
-          ➕ Nuevo juego
-        </button>
+          Nuevo juego
+        </a>
       </li>
     </ul>
   </nav>
@@ -33,16 +37,49 @@
       <header>
         <h2>Campañas</h2>
       </header>
-      <form method="get" action="{{ url_for('index', view='campaigns') }}">
+      <form
+        method="get"
+        action="{{ url_for('index') }}"
+        hx-get="{{ url_for('index') }}"
+        hx-trigger="change"
+        hx-target="#campaigns-table"
+        hx-select="#campaigns-table"
+        hx-push-url="true"
+      >
         <fieldset>
           <label for="filter-status">Estado</label>
           <select id="filter-status" name="status">
             <option value="">Todas</option>
-            <option value="planificada">Planificada</option>
-            <option value="pendiente">Pendiente</option>
-            <option value="activa">Activa</option>
-            <option value="finalizada">Finalizada</option>
-            <option value="abandonada">Abandonada</option>
+            <option
+              value="planificada"
+              {% if filter_status == "planificada" %}selected{% endif %}
+            >
+              Planificada
+            </option>
+            <option
+              value="pendiente"
+              {% if filter_status == "pendiente" %}selected{% endif %}
+            >
+              Pendiente
+            </option>
+            <option
+              value="activa"
+              {% if filter_status == "activa" %}selected{% endif %}
+            >
+              Activa
+            </option>
+            <option
+              value="finalizada"
+              {% if filter_status == "finalizada" %}selected{% endif %}
+            >
+              Finalizada
+            </option>
+            <option
+              value="abandonada"
+              {% if filter_status == "abandonada" %}selected{% endif %}
+            >
+              Abandonada
+            </option>
           </select>
         </fieldset>
         <fieldset>
@@ -50,7 +87,12 @@
           <select id="filter-game" name="game_id">
             <option value="">Todos</option>
             {% for game in games %}
-            <option value="{{ game.id }}">{{ game.name }}</option>
+            <option
+              value="{{ game.id }}"
+              {% if filter_game_id == game.id|string %}selected{% endif %}
+            >
+              {{ game.name }}
+            </option>
             {% endfor %}
           </select>
         </fieldset>
@@ -62,7 +104,7 @@
       "activa": "Activa",
       "finalizada": "Finalizada"
       } %}
-      <div>
+      <div id="campaigns-table">
         <table>
           <thead>
             <tr>
@@ -83,13 +125,10 @@
               </td>
               <td>{{ campaign.game.name }}</td>
               <td>
-                <span>
-                  {{ status_labels[campaign.status.value] }}
-                </span>
                 {% if campaign.abandoned %}
-                <span>
-                  Abandonada
-                </span>
+                Abandonada
+                {% else %}
+                {{ status_labels[campaign.status.value] }}
                 {% endif %}
               </td>
             </tr>
@@ -104,117 +143,59 @@
     </article>
   </section>
 
-  <dialog id="campaign-dialog">
-    <article>
-      <header>
-        <button
-          aria-label="Cerrar"
-          rel="prev"
-          type="button"
-          data-dialog-close="campaign-dialog"
-        ></button>
-        <h3>Nueva campaña</h3>
-      </header>
-      <form
-        method="post"
-        action="{{ url_for('index', view='campaigns') }}"
-        hx-push-url="true"
-      >
-        <label for="campaign-name">Nombre de la campaña</label>
-        <input type="text" id="campaign-name" name="campaign_name" required />
+  {% if form == "campaign" %}
+  <article>
+    <header>
+      <h3>Nueva campaña</h3>
+    </header>
+    <form method="post" action="{{ url_for('index') }}" hx-push-url="true">
+      <label for="campaign-name">Nombre</label>
+      <input type="text" id="campaign-name" name="campaign_name" required />
 
-        <label for="game">Juego</label>
-        <select id="game" name="game_id" required>
-          <option value="">(seleccionar juego)</option>
-          {% for game in games %}
-          <option value="{{ game.id }}">{{ game.name }}</option>
-          {% endfor %}
-        </select>
+      <label for="game">Juego</label>
+      <select id="game" name="game_id" required>
+        <option value="">(seleccionar juego)</option>
+        {% for game in games %}
+        <option value="{{ game.id }}">{{ game.name }}</option>
+        {% endfor %}
+      </select>
 
-        <label for="status">Estado</label>
-        <select id="status" name="status">
-          <option value="planificada">Planificada</option>
-          <option value="pendiente">Pendiente</option>
-          <option value="activa">Activa</option>
-          <option value="finalizada">Finalizada</option>
-        </select>
+      <label for="status">Estado</label>
+      <select id="status" name="status">
+        <option value="planificada">Planificada</option>
+        <option value="pendiente">Pendiente</option>
+        <option value="activa">Activa</option>
+        <option value="finalizada">Finalizada</option>
+      </select>
 
-        <label>
-          <input type="checkbox" name="abandoned" />
-          Campaña abandonada
-        </label>
+      <footer>
+        <button type="submit">Guardar campaña</button>
+        <a class="secondary" role="button" href="{{ url_for('index') }}">
+          Cancelar
+        </a>
+      </footer>
+    </form>
+  </article>
+  {% endif %}
 
-        <footer>
-          <button type="submit">Guardar campaña</button>
-          <button
-            type="button"
-            class="secondary"
-            data-dialog-close="campaign-dialog"
-          >
-            Cancelar
-          </button>
-        </footer>
-      </form>
-    </article>
-  </dialog>
+  {% if form == "game" %}
+  <article>
+    <header>
+      <h3>Nuevo juego</h3>
+    </header>
+    <form method="post" action="{{ url_for('index') }}" hx-push-url="true">
+      <label for="game-name">Nombre</label>
+      <input type="text" id="game-name" name="game_name" required />
 
-  <dialog id="game-dialog">
-    <article>
-      <header>
-        <button
-          aria-label="Cerrar"
-          rel="prev"
-          type="button"
-          data-dialog-close="game-dialog"
-        ></button>
-        <h3>Nuevo juego</h3>
-      </header>
-      <form
-        method="post"
-        action="{{ url_for('index', view='games') }}"
-        hx-push-url="true"
-      >
-        <label for="game-name">Nombre del juego</label>
-        <input type="text" id="game-name" name="game_name" required />
-
-        <footer>
-          <button type="submit">Guardar juego</button>
-          <button
-            type="button"
-            class="secondary"
-            data-dialog-close="game-dialog"
-          >
-            Cancelar
-          </button>
-        </footer>
-      </form>
-    </article>
-  </dialog>
+      <footer>
+        <button type="submit">Guardar juego</button>
+        <a class="secondary" role="button" href="{{ url_for('index') }}">
+          Cancelar
+        </a>
+      </footer>
+    </form>
+  </article>
+  {% endif %}
 </div>
-
-<script>
-  const dialogOpenButtons = document.querySelectorAll("[data-dialog-open]");
-  const dialogCloseButtons = document.querySelectorAll("[data-dialog-close]");
-
-  dialogOpenButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const dialogId = button.getAttribute("data-dialog-open");
-      const dialog = document.getElementById(dialogId);
-      if (dialog) {
-        dialog.showModal();
-      }
-    });
-  });
-
-  dialogCloseButtons.forEach((button) => {
-    button.addEventListener("click", () => {
-      const dialogId = button.getAttribute("data-dialog-close");
-      const dialog = document.getElementById(dialogId);
-      if (dialog) {
-        dialog.close();
-      }
-    });
-  });
-</script>
 
 {% endblock %}
